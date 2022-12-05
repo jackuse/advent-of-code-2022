@@ -30,7 +30,7 @@ mod tests {
         assert_eq!(res, 0);
     }
 
-    // #[test]
+    #[test]
     fn should_pass_part2_demo() {
         let res = part2(read_file(demo_filename));
 
