@@ -12,80 +12,40 @@ fn main() {
     println!("PART 2 : {}", res);
 }
 
-fn part1(input: Vec<String>) -> u32 {
-    let elves_items = split_by_space(input)
-        .into_iter()
-        .map(|s| vec_string_to_u32(s))
-        .collect::<Vec<Vec<u32>>>();
-    let elves_calories = elves_items
-        .into_iter()
-        .map(|e| sum(e))
-        .collect::<Vec<u32>>();
+fn part1(input: Vec<String>) -> u16 {
+    let total_cal_by_elves = total_cal_by_elves(input);
 
-    let max_colories = elves_calories
-        .into_iter()
-        .reduce(|acc, n| if acc > n { acc } else { n });
-
-    let res = match max_colories {
-        Some(v) => v,
-        None => 0,
-    };
-
-    res
-}
-
-fn part2(input: Vec<String>) -> u32 {
-    let elves_items = split_by_space(input)
-        .into_iter()
-        .map(|s| vec_string_to_u32(s))
-        .collect::<Vec<Vec<u32>>>();
-    let mut elves_calories = elves_items
-        .into_iter()
-        .map(|e| {
-            let calories = e.into_iter().reduce(|acc, c| acc + c);
-            match calories {
-                Some(v) => v,
-                None => 0,
-            }
-        })
-        .collect::<Vec<u32>>();
-    elves_calories.sort_by(|a, b| b.cmp(a));
-    let top_3 = &elves_calories[0..3];
-
-    sum(top_3.to_vec())
-}
-fn sum(vec: Vec<u32>) -> u32 {
-    let calories = vec.into_iter().reduce(|acc, c| acc + c);
-    match calories {
-        Some(v) => v,
+    match total_cal_by_elves.first() {
+        Some(v) => v.to_owned(),
         None => 0,
     }
 }
+fn part2(input: Vec<String>) -> u16 {
+    let total_cal_by_elves = total_cal_by_elves(input);
 
-fn vec_string_to_u32(vector: Vec<String>) -> Vec<u32> {
-    vector
-        .into_iter()
-        .map(|s| s.parse::<u32>().unwrap())
-        .collect::<Vec<u32>>()
+    total_cal_by_elves[0..3].iter().sum()
 }
 
-fn split_by_space(vector: Vec<String>) -> Vec<Vec<String>> {
-    let mut res = vec![];
-    let mut cur = vec![];
-    vector.into_iter().for_each(|s| {
-        if s.len() > 0 {
-            cur.push(s);
+fn total_cal_by_elves(input: Vec<String>) -> Vec<u16> {
+    let mut total_cal_by_elves = vec![];
+    let mut acc: u16 = 0;
+    for line in input {
+        if line.len() > 0 {
+            acc = acc
+                + match line.parse::<u16>() {
+                    Ok(v) => v,
+                    _ => 0,
+                };
         } else {
-            res.push(cur.clone());
-            cur = vec![];
+            total_cal_by_elves.push(acc);
+            acc = 0;
         }
-    });
-
-    if cur.len() > 0 {
-        res.push(cur.clone());
     }
 
-    res
+    total_cal_by_elves.sort();
+    total_cal_by_elves.reverse();
+
+    total_cal_by_elves
 }
 
 #[cfg(test)]

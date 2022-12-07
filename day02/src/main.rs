@@ -1,11 +1,11 @@
 use shared::read_file;
 
-static day: &str = "day02/";
-static demo_filename: &str = "src/input_demo.txt";
-static puzzle_filename: &str = "src/input.txt";
+static DAY: &str = "day02/";
+static DEMO_FILENAME: &str = "src/input_demo.txt";
+static PUZZLE_FILENAME: &str = "src/input.txt";
 
 fn main() {
-    let data = read_file((day.to_owned() + puzzle_filename).as_str());
+    let data = read_file((DAY.to_owned() + PUZZLE_FILENAME).as_str());
 
     let res = part1(data.clone());
     println!("PART 1 : {}", res);
@@ -14,25 +14,22 @@ fn main() {
     println!("PART 2 : {}", res);
 }
 
-fn part1(input: Vec<String>) -> u32 {
-    let moves: Vec<Vec<char>> = input.into_iter().map(|l| to_moves(l)).collect();
-    let scores: Vec<u32> = moves.into_iter().map(|m| round_score(m)).collect();
-
-    sum(scores)
-}
-fn part2(input: Vec<String>) -> u32 {
-    let moves: Vec<Vec<char>> = input.into_iter().map(|l| to_moves2(l)).collect();
-    let scores: Vec<u32> = moves.into_iter().map(|m| round_score2(m)).collect();
-
-    sum(scores)
-}
-
-fn sum(vec: Vec<u32>) -> u32 {
-    let calories = vec.into_iter().reduce(|acc, c| acc + c);
-    match calories {
-        Some(v) => v,
-        None => 0,
+fn part1(input: Vec<String>) -> u16 {
+    let mut scores = vec![];
+    for line in input {
+        scores.push(round_score(to_moves(line)));
     }
+
+    scores.iter().sum()
+}
+
+fn part2(input: Vec<String>) -> u16 {
+    let mut scores = vec![];
+    for line in input {
+        scores.push(round_score2(to_moves2(line)));
+    }
+
+    scores.iter().sum()
 }
 
 fn to_moves(line: String) -> Vec<char> {
@@ -62,7 +59,7 @@ fn to_moves2(line: String) -> Vec<char> {
         .collect::<Vec<char>>()
 }
 
-fn round_score(round: Vec<char>) -> u32 {
+fn round_score(round: Vec<char>) -> u16 {
     let move_score = move_score(*round.get(1).unwrap());
     let match_score = match_score(*round.get(1).unwrap(), *round.get(0).unwrap());
 
@@ -72,45 +69,38 @@ fn round_score(round: Vec<char>) -> u32 {
     move_score + match_score
 }
 
-fn round_score2(round: Vec<char>) -> u32 {
+fn round_score2(round: Vec<char>) -> u16 {
     let other_move = *round.get(0).unwrap();
     let match_result = *round.get(1).unwrap();
     let my_move = match match_result {
-        'L' => {
-            match other_move {
-                'R' => 'S',
-                'P' => 'R',
-                'S' => 'P',
-                _ => 'E',
-            }
+        'L' => match other_move {
+            'R' => 'S',
+            'P' => 'R',
+            'S' => 'P',
+            _ => 'E',
         },
-        'D' => {
-            match other_move {
-                'R' => 'R',
-                'P' => 'P',
-                'S' => 'S',
-                _ => 'E',
-            }
+        'D' => match other_move {
+            'R' => 'R',
+            'P' => 'P',
+            'S' => 'S',
+            _ => 'E',
         },
-        'W' => {
-            match other_move {
-                'R' => 'P',
-                'P' => 'S',
-                'S' => 'R',
-                _ => 'E',
-            }
+        'W' => match other_move {
+            'R' => 'P',
+            'P' => 'S',
+            'S' => 'R',
+            _ => 'E',
         },
-        _ => 'E'
+        _ => 'E',
     };
 
     let move_score = move_score(my_move);
-    let match_score = match_score(my_move,other_move);
+    let match_score = match_score(my_move, other_move);
 
     move_score + match_score
 }
 
-
-fn move_score(me: char) -> u32 {
+fn move_score(me: char) -> u16 {
     match me {
         'R' => 1,
         'P' => 2,
@@ -119,7 +109,7 @@ fn move_score(me: char) -> u32 {
     }
 }
 
-fn match_score(me: char, other: char) -> u32 {
+fn match_score(me: char, other: char) -> u16 {
     if me == other {
         3
     } else if (me == 'R' && other == 'S')
@@ -138,14 +128,14 @@ mod tests {
 
     #[test]
     fn should_pass_part1_demo() {
-        let res = part1(read_file(demo_filename));
+        let res = part1(read_file(DEMO_FILENAME));
 
         assert_eq!(res, 15);
     }
 
-    // #[test]
+    #[test]
     fn should_pass_part2_demo() {
-        let res = part2(read_file(demo_filename));
+        let res = part2(read_file(DEMO_FILENAME));
 
         assert_eq!(res, 12);
     }

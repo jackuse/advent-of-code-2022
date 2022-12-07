@@ -33,5 +33,6 @@ benchmark :
 
 ```bash
 cargo build --release -p dayXX 
-hyperfine --warmup 5 .\target\release\dayXX.exe
+hyperfine --warmup 5 -N .\target\release\dayXX.exe
+hyperfine --warmup 5 -N ./target/release/dayXX
 ```

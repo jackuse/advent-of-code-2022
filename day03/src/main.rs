@@ -14,7 +14,7 @@ fn main() {
     println!("PART 2 : {}", res);
 }
 
-fn part1(input: Vec<String>) -> u32 {
+fn part1(input: Vec<String>) -> u16 {
     let mut res = 0;
     for s in input {
         let compt = to_compartments(s);
@@ -25,7 +25,7 @@ fn part1(input: Vec<String>) -> u32 {
     res
 }
 
-fn part2(input: Vec<String>) -> u32 {
+fn part2(input: Vec<String>) -> u16 {
     let groups = create_groups(input);
     let mut res = 0;
     for group in groups {
@@ -94,8 +94,8 @@ fn to_compartments(rucksacks: String) -> (String, String) {
     (a.to_string(), b.to_string())
 }
 
-fn to_priority(ch: char) -> u32 {
-    let value = ch as u32;
+fn to_priority(ch: char) -> u16 {
+    let value = ch as u16;
     let mut shift = 38;
     if ch.is_lowercase() {
         shift = 96
