@@ -1,8 +1,8 @@
 use shared::read_file;
 
 static DAY: &str = "dayXX/";
-static DEMO_FILENAME: &str = "src/input_demo.txt";
-static PUZZLE_FILENAME: &str = "src/input.txt";
+pub static DEMO_FILENAME: &str = "src/input_demo.txt";
+pub static PUZZLE_FILENAME: &str = "src/input.txt";
 
 fn main() {
     let data = read_file((DAY.to_owned()+DEMO_FILENAME).as_str());
