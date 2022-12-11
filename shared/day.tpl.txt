@@ -16,6 +16,7 @@ fn main() {
 
 
 fn part1(input: Vec<String>) -> u32 {0}
+
 fn part2(input: Vec<String>) -> u32 {0}
 
 
