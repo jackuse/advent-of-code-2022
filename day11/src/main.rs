@@ -20,57 +20,10 @@ fn part1(input: Vec<String>) -> usize {
     let rounds = 20;
 
     for _round in 0..rounds {
-        // for monkey in monkeys.iter_mut() {
         for i in 0..monkeys.len() {
-            // println!();
-            // println!("Monkey: {}", i + 1);
-            // print_state(&monkeys);
-
-            let test;
-            let mut res = vec![];
-
-            let monkey = monkeys.get_mut(i).unwrap();
-            test = monkey.test.clone();
-
-            for item in &monkey.items {
-                let mut worry_level = match monkey.op.op {
-                    Op::Mult => {
-                        if monkey.op.coef == 0 {
-                            item * item
-                        } else {
-                            item * monkey.op.coef
-                        }
-                    }
-                    _ => item + monkey.op.coef,
-                };
-                worry_level = worry_level / 3;
-                res.push(worry_level);
-            }
-            monkey.inspected = monkey.inspected + monkey.items.len();
-            monkey.items = vec![];
-
-            let monkey_true = monkeys.get_mut(test.if_true).unwrap();
-
-            for worry_level in &res {
-                if worry_level % test.coef == 0 {
-                    monkey_true.items.push(worry_level.clone());
-                }
-            }
-
-            let monkey_false = monkeys.get_mut(test.if_false).unwrap();
-
-            for worry_level in &res {
-                if worry_level % test.coef != 0 {
-                    monkey_false.items.push(worry_level.clone());
-                }
-            }
+            inspect(&mut monkeys, i, |worry_level| worry_level / 3);
         }
-
-        // println!("Round: {}", round + 1);
-        // print_state(&monkeys);
     }
-
-    // print_inspected(&monkeys);
 
     get_score(&mut monkeys)
 }
@@ -80,7 +33,6 @@ fn part2(input: Vec<String>) -> usize {
     let rounds = 10000;
 
     let least_common_multiple = monkeys.iter().map(|m| m.test.coef).product::<usize>();
-    println!("{}", least_common_multiple);
 
     for _round in 0..rounds {
         // if round % 1000 == 0 {
@@ -88,47 +40,48 @@ fn part2(input: Vec<String>) -> usize {
         //     print_inspected(&monkeys);
         // }
         for i in 0..monkeys.len() {
-
-            let test;
-            let mut res = vec![];
-
-            let monkey = monkeys.get_mut(i).unwrap();
-            test = monkey.test.clone();
-
-            for item in &monkey.items {
-                let mut worry_level = match monkey.op.op {
-                    Op::Mult => {
-                        if monkey.op.coef == 0 {
-                            item * item
-                        } else {
-                            item * monkey.op.coef
-                        }
-                    }
-                    _ => item + monkey.op.coef,
-                };
-                worry_level = worry_level % least_common_multiple;
-                res.push(worry_level);
-            }
-            monkey.inspected = monkey.inspected + monkey.items.len();
-            monkey.items = vec![];
-
-            for worry_level in &res {
-                let next;
-                if worry_level % test.coef == 0 {
-                    next = test.if_true
-                } else {
-                    next = test.if_false;
-                }
-                let next_mk = monkeys.get_mut(next).unwrap();
-                next_mk.items.push(worry_level.clone());
-            }
-
+            inspect(&mut monkeys, i, |worry_level| {
+                worry_level % least_common_multiple
+            });
         }
     }
 
-    print_inspected(&monkeys);
-
     get_score(&mut monkeys)
+}
+
+fn inspect(monkeys: &mut Vec<Monkey>, i: usize, update_worry: impl Fn(usize) -> usize) {
+    let test;
+    let mut res = vec![];
+
+    let monkey = monkeys.get_mut(i).unwrap();
+    test = monkey.test.clone();
+
+    for item in &monkey.items {
+        let worry_level = match monkey.op.op {
+            Op::Mult => {
+                if monkey.op.coef == 0 {
+                    item * item
+                } else {
+                    item * monkey.op.coef
+                }
+            }
+            _ => item + monkey.op.coef,
+        };
+        res.push(update_worry(worry_level));
+    }
+    monkey.inspected = monkey.inspected + monkey.items.len();
+    monkey.items = vec![];
+
+    for worry_level in &res {
+        let next;
+        if worry_level % test.coef == 0 {
+            next = test.if_true
+        } else {
+            next = test.if_false;
+        }
+        let next_mk = monkeys.get_mut(next).unwrap();
+        next_mk.items.push(worry_level.clone());
+    }
 }
 
 pub fn print_state(monkeys: &Vec<Monkey>) {
@@ -283,6 +236,6 @@ mod tests {
     fn should_pass_part2_demo() {
         let res = part2(read_file(DEMO_FILENAME));
 
-        assert_eq!(res, 0);
+        assert_eq!(res, 2713310158);
     }
 }
